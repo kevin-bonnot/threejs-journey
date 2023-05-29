@@ -34,6 +34,17 @@ const createSphere = (radius, position) => {
     objectToUpdate.push({mesh, body})
 }
 
+const hitSound = new Audio('/sounds/hit.mp3')
+
+const playHitSound = (collision) => {
+    const impactStrength = collision.contact.getImpactVelocityAlongNormal();
+    if (impactStrength > 1.5) {
+        hitSound.volume = Math.random()
+        hitSound.currentTime = 0
+        hitSound.play()
+    }
+}
+
 /**
  * Debug
  */
@@ -147,6 +158,8 @@ const createBox = (width, height, depth, position) => {
     })
     body.position.copy(position)
     world.addBody(body)
+
+    body.addEventListener('collide', playHitSound)
 
     objectToUpdate.push({mesh, body})
 }
