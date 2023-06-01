@@ -2,7 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
-import CANNON from 'cannon'
+import * as CANNON from 'cannon-es'
 
 /**
  * Utils
@@ -26,6 +26,8 @@ const createSphere = (radius, position) => {
         position: new CANNON.Vec3(0, 3, 0),
         shape: shape
     })
+
+    body.addEventListener('collide', playHitSound)
 
     // sphereBody.applyLocalForce(new CANNON.Vec3(150, 0, 0), new CANNON.Vec3(0, 0, 0))
     body.position.copy(position)
@@ -62,6 +64,23 @@ debugObject.createSphere = () => {
     )
 }
 gui.add(debugObject, 'createSphere')
+
+// reset
+debugObject.reset = () => {
+    for(const object of objectToUpdate) {
+        // remove body
+        object.body.removeEventListener('collide', playHitSound)
+        world.removeBody(object.body)
+
+        // remove mesh
+
+        scene.remove(object.mesh)
+    }
+
+    objectToUpdate.splice(0, objectToUpdate.length)
+}
+
+gui.add(debugObject, 'reset')
 
 /**
  * Base
